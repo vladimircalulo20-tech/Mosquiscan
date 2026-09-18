@@ -1,11 +1,11 @@
 // ======================================
-// MOSQUISCAN WEBSITE JAVASCRIPT
+// MOSQUISCAN JAVASCRIPT
 // ======================================
 
-// STORAGE KEY
-const STORAGE_KEY = "mosquiscanRecords";
+// ======================================
+// HTML ELEMENTS
+// ======================================
 
-// GET HTML ELEMENTS
 const imageInput = document.getElementById("imageInput");
 const imagePreview = document.getElementById("imagePreview");
 const analyzeButton = document.getElementById("analyzeButton");
@@ -27,27 +27,39 @@ const nonSitesText = document.getElementById("nonSites");
 const activityLog = document.getElementById("activityLog");
 
 // ======================================
-// DEFAULT DATE
+// SETTINGS
+// ======================================
+
+const MODEL_URL =
+  "https://teachablemachine.withgoogle.com/models/cKLAix4wn/";
+
+const STORAGE_KEY = "mosquiscanRecords";
+
+let model;
+let modelLoaded = false;
+let selectedImageData = null;
+
+// ======================================
+// SET DEFAULT DATE
 // ======================================
 
 const today = new Date().toISOString().split("T")[0];
-
-if (dateInput) {
-  dateInput.value = today;
-}
+dateInput.value = today;
 
 // ======================================
-// INITIALIZE MAP
+// INITIALIZE LEAFLET MAP
 // ======================================
 
+// Default map center: Candijay, Bohol
 const map = L.map("map").setView([9.8169, 124.4726], 13);
 
-// OpenStreetMap map tiles
+// OpenStreetMap tiles
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; OpenStreetMap contributors"
+  attribution: "&copy; OpenStreetMap contributors",
+  maxZoom: 19
 }).addTo(map);
 
-// Store map markers
+// Store markers
 let markers = [];
 
 // ======================================
@@ -55,6 +67,35 @@ let markers = [];
 // ======================================
 
 let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+// ======================================
+// LOAD TEACHABLE MACHINE MODEL
+// ======================================
+
+async function loadAIModel() {
+  try {
+    resultText.textContent = "Loading AI model...";
+    confidenceText.textContent =
+      "Please wait while the trained model loads.";
+
+    const modelURL = MODEL_URL + "model.json";
+    const metadataURL = MODEL_URL + "metadata.json";
+
+    model = await tmImage.load(modelURL, metadataURL);
+
+    modelLoaded = true;
+
+    resultText.textContent = "AI model ready";
+    confidenceText.textContent =
+      "Upload an image and click Analyze Image.";
+  } catch (error) {
+    console.error("Model loading error:", error);
+
+    resultText.textContent = "AI model failed to load";
+    confidenceText.textContent =
+      "Please check the model link and your internet connection.";
+  }
+}
 
 // ======================================
 // IMAGE PREVIEW
@@ -65,24 +106,31 @@ imageInput.addEventListener("change", function () {
 
   if (!file) {
     imagePreview.style.display = "none";
+    selectedImageData = null;
     return;
   }
 
   const reader = new FileReader();
 
   reader.onload = function (event) {
-    imagePreview.src = event.target.result;
+    selectedImageData = event.target.result;
+
+    imagePreview.src = selectedImageData;
     imagePreview.style.display = "block";
+
+    resultText.textContent = "Image ready for analysis";
+    confidenceText.textContent =
+      "Click Analyze Image to use the trained AI model.";
   };
 
   reader.readAsDataURL(file);
 });
 
 // ======================================
-// SAMPLE AI ANALYSIS
+// ANALYZE IMAGE USING AI MODEL
 // ======================================
 
-analyzeButton.addEventListener("click", function () {
+analyzeButton.addEventListener("click", async function () {
   const file = imageInput.files[0];
 
   if (!file) {
@@ -90,29 +138,86 @@ analyzeButton.addEventListener("click", function () {
     return;
   }
 
+  if (!modelLoaded) {
+    alert("The AI model is not ready yet. Please wait.");
+    return;
+  }
+
   analyzeButton.disabled = true;
   analyzeButton.textContent = "Analyzing...";
 
   resultText.textContent = "Analyzing image...";
-  confidenceText.textContent = "Please wait.";
+  confidenceText.textContent =
+    "The AI is examining the uploaded image.";
 
-  // Temporary simulated AI analysis
-  // This will be replaced by a real AI model later.
-  setTimeout(function () {
-    const possibleSite = Math.random() >= 0.5;
+  try {
+    const predictions = await model.predict(imagePreview);
 
-    if (possibleSite) {
-      resultText.textContent = "Possible Mosquito Breeding Site";
-      confidenceText.textContent = "AI Confidence: 89%";
-    } else {
-      resultText.textContent = "Not a Possible Breeding Site";
-      confidenceText.textContent = "AI Confidence: 91%";
+    let highestPrediction = predictions[0];
+
+    for (let i = 1; i < predictions.length; i++) {
+      if (
+        predictions[i].probability >
+        highestPrediction.probability
+      ) {
+        highestPrediction = predictions[i];
+      }
     }
 
-    analyzeButton.disabled = false;
-    analyzeButton.textContent = "Analyze Image";
-  }, 1500);
+    const className = highestPrediction.className;
+    const confidence = (
+      highestPrediction.probability * 100
+    ).toFixed(2);
+
+    resultText.textContent = className;
+    confidenceText.textContent =
+      "AI Confidence: " + confidence + "%";
+  } catch (error) {
+    console.error("Prediction error:", error);
+
+    resultText.textContent = "Analysis failed";
+    confidenceText.textContent =
+      "Please try uploading another image.";
+  }
+
+  analyzeButton.disabled = false;
+  analyzeButton.textContent = "Analyze Image";
 });
+
+// ======================================
+// CHECK IF RESULT IS A POSSIBLE SITE
+// ======================================
+
+function isPossibleBreedingSite(result) {
+  const text = result.toLowerCase();
+
+  const negativeWords = [
+    "not",
+    "no",
+    "non",
+    "negative",
+    "absent",
+    "none"
+  ];
+
+  const positiveWords = [
+    "possible",
+    "breeding",
+    "site",
+    "yes",
+    "positive"
+  ];
+
+  const hasNegativeWord = negativeWords.some(function (word) {
+    return text.includes(word);
+  });
+
+  const hasPositiveWord = positiveWords.some(function (word) {
+    return text.includes(word);
+  });
+
+  return hasPositiveWord && !hasNegativeWord;
+}
 
 // ======================================
 // SAVE RECORD
@@ -127,7 +232,7 @@ saveButton.addEventListener("click", function () {
   const date = dateInput.value;
   const notes = notesInput.value.trim();
 
-  if (!file) {
+  if (!file || !selectedImageData) {
     alert("Please upload an image first.");
     return;
   }
@@ -135,6 +240,9 @@ saveButton.addEventListener("click", function () {
   if (
     result === "Analyzing image..." ||
     result === "No analysis yet" ||
+    result === "AI model ready" ||
+    result === "Image ready for analysis" ||
+    result === "Analysis failed" ||
     result === ""
   ) {
     alert("Please analyze the image first.");
@@ -147,7 +255,7 @@ saveButton.addEventListener("click", function () {
   }
 
   if (!date) {
-    alert("Please select a date.");
+    alert("Please select the inspection date.");
     return;
   }
 
@@ -166,36 +274,31 @@ saveButton.addEventListener("click", function () {
     return;
   }
 
-  const reader = new FileReader();
-
-  reader.onload = function (event) {
-    const imageData = event.target.result;
-
-    const newRecord = {
-      id: Date.now(),
-      image: imageData,
-      result: result,
-      confidence: confidenceText.textContent,
-      latitude: latitudeNumber,
-      longitude: longitudeNumber,
-      date: date,
-      notes: notes,
-      createdAt: new Date().toLocaleString()
-    };
-
-    records.push(newRecord);
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-
-    alert("Record saved successfully!");
-
-    updateDashboard();
-    displayRecordsOnMap();
-    displayActivityLog();
-    clearForm();
+  const newRecord = {
+    id: Date.now(),
+    image: selectedImageData,
+    result: result,
+    confidence: confidenceText.textContent,
+    latitude: latitudeNumber,
+    longitude: longitudeNumber,
+    date: date,
+    notes: notes,
+    createdAt: new Date().toLocaleString()
   };
 
-  reader.readAsDataURL(file);
+  records.push(newRecord);
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(records)
+  );
+
+  alert("Record saved successfully!");
+
+  updateDashboard();
+  displayRecordsOnMap();
+  displayActivityLog();
+  clearForm();
 });
 
 // ======================================
@@ -206,12 +309,10 @@ function updateDashboard() {
   const totalRecords = records.length;
 
   const possibleSites = records.filter(function (record) {
-    return record.result === "Possible Mosquito Breeding Site";
+    return isPossibleBreedingSite(record.result);
   }).length;
 
-  const nonSites = records.filter(function (record) {
-    return record.result === "Not a Possible Breeding Site";
-  }).length;
+  const nonSites = totalRecords - possibleSites;
 
   totalRecordsText.textContent = totalRecords;
   possibleSitesText.textContent = possibleSites;
@@ -219,11 +320,33 @@ function updateDashboard() {
 }
 
 // ======================================
-// DISPLAY MARKERS ON MAP
+// CREATE MAP MARKER
+// ======================================
+
+function createMarkerIcon(color) {
+  return L.divIcon({
+    className: "custom-marker",
+    html: `
+      <div style="
+        background-color: ${color};
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+      "></div>
+    `,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  });
+}
+
+// ======================================
+// DISPLAY RECORDS ON MAP
 // ======================================
 
 function displayRecordsOnMap() {
-  // Remove previous markers
+  // Remove old markers
   markers.forEach(function (marker) {
     map.removeLayer(marker);
   });
@@ -231,38 +354,28 @@ function displayRecordsOnMap() {
   markers = [];
 
   records.forEach(function (record) {
-    const isPossibleSite =
-      record.result === "Possible Mosquito Breeding Site";
+    const possibleSite = isPossibleBreedingSite(record.result);
 
-    const markerColor = isPossibleSite ? "red" : "green";
-
-    const markerIcon = L.divIcon({
-      className: "custom-marker",
-      html: `
-        <div style="
-          background-color: ${markerColor};
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          border: 3px solid white;
-          box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-        "></div>
-      `,
-      iconSize: [18, 18],
-      iconAnchor: [9, 9]
-    });
+    const markerColor = possibleSite
+      ? "#dc2626"
+      : "#16a34a";
 
     const marker = L.marker(
       [record.latitude, record.longitude],
-      { icon: markerIcon }
+      {
+        icon: createMarkerIcon(markerColor)
+      }
     ).addTo(map);
 
     marker.bindPopup(`
-      <strong>${record.result}</strong><br>
-      <b>Date:</b> ${record.date}<br>
-      <b>Latitude:</b> ${record.latitude}<br>
-      <b>Longitude:</b> ${record.longitude}<br>
-      <b>Notes:</b> ${record.notes || "No notes"}
+      <div>
+        <strong>${record.result}</strong><br><br>
+        <b>Date:</b> ${record.date}<br>
+        <b>Latitude:</b> ${record.latitude}<br>
+        <b>Longitude:</b> ${record.longitude}<br>
+        <b>Confidence:</b> ${record.confidence}<br>
+        <b>Notes:</b> ${record.notes || "No notes"}
+      </div>
     `);
 
     markers.push(marker);
@@ -287,14 +400,24 @@ function displayActivityLog() {
 
   newestRecords.forEach(function (record) {
     const logEntry = document.createElement("div");
+
     logEntry.className = "log-entry";
 
     logEntry.innerHTML = `
       <strong>${record.result}</strong><br>
       <span>Date: ${record.date}</span><br>
-      <span>Coordinates: ${record.latitude}, ${record.longitude}</span><br>
-      <span>Notes: ${record.notes || "No notes"}</span><br>
-      <small>Saved: ${record.createdAt}</small>
+      <span>
+        Coordinates: ${record.latitude}, ${record.longitude}
+      </span><br>
+      <span>
+        Confidence: ${record.confidence}
+      </span><br>
+      <span>
+        Notes: ${record.notes || "No notes"}
+      </span><br>
+      <small>
+        Saved: ${record.createdAt}
+      </small>
     `;
 
     activityLog.appendChild(logEntry);
@@ -309,9 +432,11 @@ function clearForm() {
   imageInput.value = "";
   imagePreview.src = "";
   imagePreview.style.display = "none";
+  selectedImageData = null;
 
   resultText.textContent = "No analysis yet";
-  confidenceText.textContent = "Upload an image and click Analyze Image.";
+  confidenceText.textContent =
+    "Upload an image and click Analyze Image.";
 
   latitudeInput.value = "";
   longitudeInput.value = "";
@@ -353,3 +478,4 @@ clearRecordsButton.addEventListener("click", function () {
 updateDashboard();
 displayRecordsOnMap();
 displayActivityLog();
+loadAIModel();
