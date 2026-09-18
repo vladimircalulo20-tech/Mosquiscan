@@ -1,4 +1,7 @@
-/* GENERAL SETTINGS */
+/* ======================================
+   GENERAL SETTINGS
+====================================== */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,100 +10,150 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #f4f8f5;
+  background: #f3f7f4;
   color: #1f2937;
   line-height: 1.6;
 }
 
-/* HEADER */
+/* ======================================
+   HEADER
+====================================== */
+
 header {
   background: #146c43;
   color: white;
-  padding: 25px 20px;
+  padding: 28px 20px;
   text-align: center;
 }
 
-header h1 {
-  font-size: 32px;
+.header-content h1 {
+  font-size: 34px;
   margin-bottom: 5px;
 }
 
-header p {
+.header-content p {
   font-size: 15px;
-  opacity: 0.95;
 }
 
-/* MAIN CONTAINER */
+/* ======================================
+   MAIN CONTAINER
+====================================== */
+
 .container {
-  width: 90%;
+  width: 92%;
   max-width: 1100px;
   margin: 25px auto;
 }
 
-/* INTRODUCTION */
+/* ======================================
+   INTRODUCTION
+====================================== */
+
 .intro {
   background: white;
   padding: 25px;
   border-radius: 12px;
   margin-bottom: 25px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
 .intro h2 {
   color: #146c43;
+  margin-bottom: 12px;
+}
+
+.intro p {
   margin-bottom: 10px;
 }
 
-/* DASHBOARD CARDS */
+.notice {
+  background: #fff8e1;
+  border-left: 4px solid #d99a06;
+  padding: 10px;
+  color: #684f00;
+  border-radius: 5px;
+}
+
+/* ======================================
+   DASHBOARD
+====================================== */
+
 .dashboard {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  gap: 16px;
   margin-bottom: 25px;
 }
 
 .card {
   background: white;
-  padding: 20px;
+  padding: 22px;
   text-align: center;
   border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  border-top: 5px solid #146c43;
+}
+
+.possible-card {
+  border-top-color: #dc2626;
+}
+
+.non-site-card {
+  border-top-color: #16a34a;
 }
 
 .card h3 {
-  font-size: 16px;
   color: #4b5563;
+  font-size: 15px;
   margin-bottom: 8px;
 }
 
 .card p {
-  font-size: 30px;
-  font-weight: bold;
   color: #146c43;
+  font-size: 32px;
+  font-weight: bold;
 }
 
-/* SECTIONS */
+.possible-card p {
+  color: #dc2626;
+}
+
+.non-site-card p {
+  color: #16a34a;
+}
+
+/* ======================================
+   SECTIONS
+====================================== */
+
 .section {
   background: white;
   padding: 25px;
   border-radius: 12px;
   margin-bottom: 25px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
 .section h2 {
   color: #146c43;
   margin-bottom: 15px;
-  border-bottom: 2px solid #d1e7d8;
+  border-bottom: 2px solid #d5e9dc;
   padding-bottom: 8px;
 }
 
-/* FORM ELEMENTS */
+.map-description {
+  margin-bottom: 10px;
+}
+
+/* ======================================
+   FORM ELEMENTS
+====================================== */
+
 label {
   display: block;
   font-weight: bold;
   margin-top: 15px;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 input[type="file"],
@@ -111,12 +164,13 @@ textarea {
   padding: 11px;
   border: 1px solid #cbd5e1;
   border-radius: 7px;
+  font-family: inherit;
   font-size: 14px;
   background: #ffffff;
 }
 
 textarea {
-  min-height: 90px;
+  min-height: 100px;
   resize: vertical;
 }
 
@@ -127,25 +181,39 @@ textarea:focus {
   box-shadow: 0 0 0 2px rgba(20, 108, 67, 0.12);
 }
 
-/* IMAGE PREVIEW */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* ======================================
+   IMAGE PREVIEW
+====================================== */
+
 #imagePreview {
   display: none;
   width: 100%;
-  max-width: 500px;
+  max-width: 550px;
   max-height: 350px;
   object-fit: contain;
-  margin: 15px auto;
-  border: 2px solid #d1e7d8;
+  margin: 18px auto;
+  border: 2px solid #d5e9dc;
   border-radius: 10px;
   background: #f8fafc;
 }
 
-/* BUTTONS */
+/* ======================================
+   BUTTONS
+====================================== */
+
 button {
   border: none;
   border-radius: 7px;
   padding: 11px 18px;
   margin-top: 15px;
+  background: #146c43;
+  color: white;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
@@ -153,28 +221,31 @@ button {
 }
 
 button:hover {
-  transform: translateY(-1px);
   opacity: 0.9;
+  transform: translateY(-1px);
 }
 
-#analyzeButton,
-#saveButton {
-  background: #146c43;
-  color: white;
+button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
 }
 
-#clearRecordsButton {
+.danger-button {
   background: #b91c1c;
-  color: white;
+  margin-top: 0;
 }
 
-/* RESULT BOX */
+/* ======================================
+   RESULT BOX
+====================================== */
+
 .result-box {
-  margin-top: 20px;
-  padding: 18px;
-  border-radius: 10px;
   background: #eef7f0;
   border-left: 5px solid #146c43;
+  border-radius: 8px;
+  padding: 18px;
+  margin-top: 20px;
 }
 
 .result-box h3 {
@@ -188,20 +259,27 @@ button:hover {
 }
 
 #confidenceText {
-  margin-top: 5px;
   color: #4b5563;
+  margin-top: 5px;
 }
 
-/* MAP */
+/* ======================================
+   MAP
+====================================== */
+
 #map {
   width: 100%;
   height: 450px;
-  border-radius: 10px;
-  border: 2px solid #d1e7d8;
   margin-top: 15px;
+  border: 2px solid #d5e9dc;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-/* MAP LEGEND */
+/* ======================================
+   MAP LEGEND
+====================================== */
+
 .legend {
   display: flex;
   flex-wrap: wrap;
@@ -217,10 +295,10 @@ button:hover {
 }
 
 .legend-color {
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
   display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
 }
 
 .red {
@@ -231,7 +309,17 @@ button:hover {
   background: #16a34a;
 }
 
-/* ACTIVITY LOG */
+/* ======================================
+   ACTIVITY LOG
+====================================== */
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
 #activityLog {
   margin-top: 15px;
 }
@@ -239,10 +327,18 @@ button:hover {
 .log-entry {
   background: #f8fafc;
   border-left: 4px solid #146c43;
-  padding: 12px;
+  padding: 13px;
   margin-bottom: 10px;
   border-radius: 6px;
   font-size: 14px;
+}
+
+.log-entry strong {
+  color: #146c43;
+}
+
+.log-entry small {
+  color: #6b7280;
 }
 
 .empty-log {
@@ -250,20 +346,30 @@ button:hover {
   font-style: italic;
 }
 
-/* FOOTER */
+/* ======================================
+   FOOTER
+====================================== */
+
 footer {
   background: #146c43;
   color: white;
   text-align: center;
-  padding: 18px;
+  padding: 20px;
   margin-top: 30px;
   font-size: 13px;
 }
 
-/* RESPONSIVE DESIGN */
+footer p {
+  margin: 3px 0;
+}
+
+/* ======================================
+   RESPONSIVE DESIGN
+====================================== */
+
 @media (max-width: 768px) {
-  header h1 {
-    font-size: 25px;
+  .header-content h1 {
+    font-size: 27px;
   }
 
   .container {
@@ -274,6 +380,10 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
   .section,
   .intro {
     padding: 18px;
@@ -281,5 +391,10 @@ footer {
 
   #map {
     height: 350px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
