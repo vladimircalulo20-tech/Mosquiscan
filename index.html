@@ -1,244 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>MosquiScan | Mosquito Monitoring System</title>
+  <title>MosquiScan | Mosquito Monitoring System</title>
 
-    <!-- Website Design -->
-    <link rel="stylesheet" href="style.css">
+  <!-- Website CSS -->
+  <link rel="stylesheet" href="style.css" />
 
-    <!-- Leaflet Interactive Map CSS -->
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    >
+  <!-- Leaflet Map CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 </head>
 
 <body>
 
-    <!-- HEADER -->
-    <header>
-        <div class="header-content">
-            <h1>🦟 MosquiScan</h1>
-            <p>Drone-Assisted Mosquito Breeding-Site Monitoring System</p>
-            <span class="status-badge">SEMI-AUTOMATED MONITORING</span>
-        </div>
-    </header>
+  <!-- HEADER -->
+  <header>
+    <div class="header-content">
+      <h1>🦟 MosquiScan</h1>
+      <p>
+        Drone-Assisted Mosquito Breeding-Site Monitoring System
+      </p>
+    </div>
+  </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="container">
+  <main class="container">
 
-        <!-- PROJECT INTRODUCTION -->
-        <section class="card introduction">
-            <h2>About MosquiScan</h2>
-            <p>
-                MosquiScan is a drone-assisted monitoring system designed
-                to help identify and document possible mosquito breeding
-                sites through image analysis and geospatial mapping.
-            </p>
-            <p class="small-text">
-                This system supports inspection and does not replace
-                professional health or environmental inspectors.
-            </p>
-        </section>
+    <!-- INTRODUCTION -->
+    <section class="intro">
+      <h2>About MosquiScan</h2>
+      <p>
+        MosquiScan is a semi-automated monitoring system that uses
+        drone-captured images, artificial intelligence, and geospatial
+        mapping to help identify and record possible mosquito breeding
+        sites.
+      </p>
+      <p class="notice">
+        Note: The system provides preliminary AI-based results and does
+        not replace professional inspection.
+      </p>
+    </section>
 
-        <!-- DASHBOARD SUMMARY -->
-        <section class="dashboard-grid">
+    <!-- DASHBOARD -->
+    <section class="dashboard">
+      <div class="card">
+        <h3>Total Records</h3>
+        <p id="totalRecords">0</p>
+      </div>
 
-            <div class="stat-card">
-                <span class="stat-icon">📋</span>
-                <h3 id="totalRecords">0</h3>
-                <p>Total Records</p>
-            </div>
+      <div class="card possible-card">
+        <h3>Possible Sites</h3>
+        <p id="possibleSites">0</p>
+      </div>
 
-            <div class="stat-card">
-                <span class="stat-icon">🔴</span>
-                <h3 id="possibleSites">0</h3>
-                <p>Possible Sites</p>
-            </div>
+      <div class="card non-site-card">
+        <h3>Other Areas</h3>
+        <p id="nonSites">0</p>
+      </div>
+    </section>
 
-            <div class="stat-card">
-                <span class="stat-icon">🟢</span>
-                <h3 id="nonSites">0</h3>
-                <p>Not Possible Sites</p>
-            </div>
+    <!-- IMAGE ANALYSIS -->
+    <section class="section">
+      <h2>Image Analysis</h2>
 
-        </section>
+      <label for="imageInput">
+        Upload a drone-captured image
+      </label>
 
-        <!-- IMAGE UPLOAD -->
-        <section class="card">
-            <h2>📸 Drone Image Analysis</h2>
+      <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+      />
 
-            <p class="section-description">
-                Upload a photograph captured during drone-assisted
-                inspection.
-            </p>
+      <img
+        id="imagePreview"
+        alt="Uploaded image preview"
+      />
 
-            <label for="imageInput" class="input-label">
-                Select Image
-            </label>
+      <button id="analyzeButton">
+        Analyze Image
+      </button>
 
-            <input
-                type="file"
-                id="imageInput"
-                accept="image/*"
-            >
-
-            <!-- IMAGE PREVIEW -->
-            <div class="preview-container">
-                <img
-                    id="imagePreview"
-                    alt="Uploaded drone image preview"
-                >
-            </div>
-
-            <button id="analyzeButton" class="primary-button">
-                🤖 Analyze Image
-            </button>
-
-            <p class="small-text">
-                Note: The current analysis is a demonstration.
-                The trained AI model will be connected later.
-            </p>
-        </section>
-
-        <!-- AI RESULT -->
-        <section class="card">
-            <h2>🤖 AI Analysis Result</h2>
-
-            <div id="resultBox" class="result-box">
-                <span class="result-label">STATUS</span>
-                <p id="resultText">No image analyzed yet.</p>
-                <p id="confidenceText"></p>
-            </div>
-        </section>
-
-        <!-- LOCATION INFORMATION -->
-        <section class="card">
-            <h2>📍 Inspection Information</h2>
-
-            <p class="section-description">
-                Enter the location and details of the inspected site.
-            </p>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label for="latitude">Latitude</label>
-                    <input
-                        type="number"
-                        id="latitude"
-                        step="any"
-                        placeholder="Example: 9.75"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="longitude">Longitude</label>
-                    <input
-                        type="number"
-                        id="longitude"
-                        step="any"
-                        placeholder="Example: 124.47"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="date">Date</label>
-                    <input
-                        type="date"
-                        id="date"
-                    >
-                </div>
-
-            </div>
-
-            <div class="form-group">
-                <label for="notes">Inspection Notes</label>
-                <textarea
-                    id="notes"
-                    placeholder="Enter observations about the inspected location..."
-                ></textarea>
-            </div>
-
-            <button id="saveButton" class="primary-button">
-                💾 Save Inspection Record
-            </button>
-        </section>
-
-        <!-- INTERACTIVE MAP -->
-        <section class="card">
-            <div class="map-header">
-                <div>
-                    <h2>🗺️ Monitoring Map</h2>
-                    <p class="section-description">
-                        Geospatial visualization of inspection records.
-                    </p>
-                </div>
-            </div>
-
-            <!-- MAP LEGEND -->
-            <div class="map-legend">
-                <span>
-                    <i class="legend-dot red-dot"></i>
-                    Possible Breeding Site
-                </span>
-
-                <span>
-                    <i class="legend-dot green-dot"></i>
-                    Not a Possible Breeding Site
-                </span>
-            </div>
-
-            <!-- LEAFLET MAP -->
-            <div id="map"></div>
-
-            <p class="map-note">
-                Markers are based on the latitude and longitude
-                recorded during inspection.
-            </p>
-        </section>
-
-        <!-- ACTIVITY LOG -->
-        <section class="card">
-            <div class="log-header">
-                <div>
-                    <h2>📋 Activity Log</h2>
-                    <p class="section-description">
-                        Saved inspection records.
-                    </p>
-                </div>
-
-                <button id="clearRecordsButton" class="secondary-button">
-                    Clear Records
-                </button>
-            </div>
-
-            <div id="logMessage">
-                <p class="empty-message">No records yet.</p>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer>
-        <p><strong>MosquiScan</strong></p>
-        <p>Drone-Assisted Mosquito Monitoring Research Prototype</p>
-        <p class="footer-small">
-            Developed for Science and Technology Fair
+      <div class="result-box">
+        <h3>AI Result</h3>
+        <p id="resultText">No analysis yet</p>
+        <p id="confidenceText">
+          Upload an image and click Analyze Image.
         </p>
-    </footer>
+      </div>
+    </section>
 
-    <!-- LEAFLET MAP JAVASCRIPT -->
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
+    <!-- RECORD DETAILS -->
+    <section class="section">
+      <h2>Record Location and Details</h2>
 
-    <!-- MOSQUISCAN JAVASCRIPT -->
-    <script src="script.js"></script>
+      <div class="form-grid">
+
+        <div>
+          <label for="latitude">
+            Latitude
+          </label>
+
+          <input
+            type="number"
+            id="latitude"
+            placeholder="Example: 9.8169"
+            step="any"
+          />
+        </div>
+
+        <div>
+          <label for="longitude">
+            Longitude
+          </label>
+
+          <input
+            type="number"
+            id="longitude"
+            placeholder="Example: 124.4726"
+            step="any"
+          />
+        </div>
+
+      </div>
+
+      <label for="date">
+        Inspection Date
+      </label>
+
+      <input
+        type="date"
+        id="date"
+      />
+
+      <label for="notes">
+        Notes
+      </label>
+
+      <textarea
+        id="notes"
+        placeholder="Enter additional observations or remarks..."
+      ></textarea>
+
+      <button id="saveButton">
+        Save Record
+      </button>
+    </section>
+
+    <!-- MAP -->
+    <section class="section">
+      <h2>Breeding-Site Map</h2>
+
+      <p class="map-description">
+        The map displays the recorded locations of possible mosquito
+        breeding sites and other inspected areas.
+      </p>
+
+      <div id="map"></div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-color red"></span>
+          Possible Breeding Site
+        </div>
+
+        <div class="legend-item">
+          <span class="legend-color green"></span>
+          Other Inspected Area
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVITY LOG -->
+    <section class="section">
+      <div class="section-heading">
+        <h2>Activity Log</h2>
+
+        <button
+          id="clearRecordsButton"
+          class="danger-button"
+        >
+          Clear Records
+        </button>
+      </div>
+
+      <div id="activityLog">
+        <p class="empty-log">
+          No records saved yet.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>
+      © 2026 MosquiScan | Drone-Assisted Mosquito Monitoring System
+    </p>
+    <p>
+      Developed for Science and Technology Research
+    </p>
+  </footer>
+
+  <!-- Leaflet Map JavaScript -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+
+  <!-- Teachable Machine Image Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+  <!-- Website JavaScript -->
+  <script src="script.js"></script>
 
 </body>
 </html>
