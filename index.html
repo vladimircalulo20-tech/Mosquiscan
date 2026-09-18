@@ -8,38 +8,95 @@
 </head>
 <body>
 
-    <h1>MosquiScan</h1>
-    <p>Drone-Assisted Mosquito Breeding-Site Monitoring System</p>
+    <header>
+        <h1>MosquiScan</h1>
+        <p>Drone-Assisted Mosquito Breeding-Site Monitoring System</p>
+    </header>
 
-    <hr>
+    <div class="container">
 
-    <h2>Upload Drone Image</h2>
-    <input type="file" accept="image/*">
+        <div class="card">
+            <h2>Upload Drone Image</h2>
 
-    <h2>AI Analysis Result</h2>
-    <p>No image analyzed yet.</p>
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+            >
 
-    <h2>Location Information</h2>
-    <label>Latitude:</label>
-    <input type="text" placeholder="Enter latitude">
-    <br><br>
+            <img id="imagePreview" alt="Uploaded drone image preview">
 
-    <label>Longitude:</label>
-    <input type="text" placeholder="Enter longitude">
-    <br><br>
+            <br>
 
-    <label>Date:</label>
-    <input type="date">
-    <br><br>
+            <button id="analyzeButton">
+                Analyze Image
+            </button>
+        </div>
 
-    <label>Notes:</label>
-    <textarea placeholder="Enter notes"></textarea>
+        <div class="card">
+            <h2>AI Analysis Result</h2>
 
-    <h2>Activity Log</h2>
-    <p>No records yet.</p>
+            <div class="result">
+                <p id="resultText">
+                    No image analyzed yet.
+                </p>
+            </div>
+        </div>
 
-    <h2>Map</h2>
-    <p>The monitoring map will be added in the next steps.</p>
+        <div class="card">
+            <h2>Location Information</h2>
+
+            <label for="latitude">Latitude</label>
+            <input
+                type="text"
+                id="latitude"
+                placeholder="Enter latitude"
+            >
+
+            <label for="longitude">Longitude</label>
+            <input
+                type="text"
+                id="longitude"
+                placeholder="Enter longitude"
+            >
+
+            <label for="date">Date</label>
+            <input
+                type="date"
+                id="date"
+            >
+
+            <label for="notes">Notes</label>
+            <textarea
+                id="notes"
+                placeholder="Enter notes about the inspected location"
+            ></textarea>
+
+            <button id="saveButton">
+                Save Record
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>Activity Log</h2>
+            <p id="logMessage">No records yet.</p>
+        </div>
+
+        <div class="card">
+            <h2>Monitoring Map</h2>
+
+            <div class="map-placeholder">
+                The interactive map will be added here.
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        MosquiScan | Research Prototype
+    </footer>
+
+    <script src="script.js"></script>
 
 </body>
 </html>
