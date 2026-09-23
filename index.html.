@@ -1,0 +1,13 @@
+<div style="background:white; padding:20px; text-align:center;">
+    <h2>LOGO TEST</h2>
+
+    <img
+        src="./cmhs-logo.png.jpg"
+        alt="CMHS Logo Test"
+        style="
+            width:150px;
+            height:150px;
+            object-fit:contain;
+        "
+    >
+</div>
