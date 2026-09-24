@@ -5,8 +5,8 @@
         src="./cmhs-logo.png.jpg"
         alt="CMHS Logo Test"
         style="
-            width:150px;
-            height:150px;
+            width:155px;
+            height:155px;
             object-fit:contain;
         "
     >
